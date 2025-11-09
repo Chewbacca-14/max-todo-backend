@@ -1,7 +1,6 @@
 # Use official PHP image with Apache
-FROM php:8.1-apache
+FROM php:8.1-apache-bullseye
 
-# Set working directory
 WORKDIR /var/www/html
 
 # Install system dependencies
@@ -13,7 +12,9 @@ RUN apt-get update && apt-get install -y \
     libxml2-dev \
     zip \
     curl \
-    && docker-php-ext-install pdo_mysql mbstring zip xml ctype tokenizer json \
+    libpng-dev \
+    zlib1g-dev \
+    && docker-php-ext-install pdo_mysql mbstring zip xml \
     && a2enmod rewrite
 
 # Install Composer
@@ -25,7 +26,7 @@ COPY . .
 # Set permissions
 RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
 
-# Install PHP dependencies
+# Install Laravel dependencies
 RUN composer install --no-dev --optimize-autoloader --ignore-platform-reqs
 
 # Expose port
