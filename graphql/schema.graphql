@@ -1,0 +1,55 @@
+scalar DateTime
+    @scalar(class: "Nuwave\\Lighthouse\\Schema\\Types\\Scalars\\DateTime")
+
+type User {
+    id: ID!
+    name: String!
+    email: String!
+}
+
+type Note {
+    id: ID!
+    title: String!
+    note: String!
+    created_at: DateTime!
+    updated_at: DateTime!
+}
+
+type Query {
+    notes: [Note!]
+        @field(resolver: "App\\GraphQL\\Queries\\NoteQuery@notes")
+        @guard(with: ["sanctum"])
+}
+
+type Mutation {
+    createNote(title: String!, note: String!): Note!
+        @field(resolver: "App\\GraphQL\\Mutations\\NoteMutation@create")
+        @guard(with: ["sanctum"])
+
+    updateNote(id: ID!, title: String, note: String): Note!
+        @field(resolver: "App\\GraphQL\\Mutations\\NoteMutation@update")
+        @guard(with: ["sanctum"])
+
+    deleteNote(id: ID!): Note!
+        @field(resolver: "App\\GraphQL\\Mutations\\NoteMutation@delete")
+        @guard(with: ["sanctum"])
+
+    register(name: String!, email: String!, password: String!): AuthPayload!
+        @field(resolver: "App\\GraphQL\\Mutations\\AuthMutation@register")
+
+    login(email: String!, password: String!): AuthPayload!
+        @field(resolver: "App\\GraphQL\\Mutations\\AuthMutation@login")
+
+    logout: Message!
+        @field(resolver: "App\\GraphQL\\Mutations\\AuthMutation@logout")
+        @guard(with: ["sanctum"])
+}
+
+type AuthPayload {
+    user: User!
+    token: String!
+}
+
+type Message {
+    message: String!
+}
